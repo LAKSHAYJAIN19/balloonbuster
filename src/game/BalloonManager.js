@@ -69,7 +69,8 @@ function drawBalloons(){
         ctx.font = "12px Arial"
         ctx.textAlign = "center"
         ctx.textBaseline = "middle"
-        ctx.fillText(balloon.hitsLeft, balloon.x, balloon.y+12)
+        const hitText = balloon.hitsLeft === 1 ? "hit" : "hits"
+        ctx.fillText(balloon.hitsLeft+" "+hitText, balloon.x, balloon.y+12)
         balloon.y += balloon.speed
 
         if(balloon.y > canvas.height){

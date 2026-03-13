@@ -15,43 +15,39 @@ export default class StartScreen {
     createUI(){
 
         this.container = document.createElement("div")
-
-        this.container.style.position = "absolute"
-        this.container.style.top = "0"
-        this.container.style.left = "0"
-        this.container.style.width = "100%"
-        this.container.style.height = "100%"
-        this.container.style.display = "flex"
-        this.container.style.flexDirection = "column"
-        this.container.style.alignItems = "center"
-        this.container.style.justifyContent = "center"
-        this.container.style.background = "#111"
-        this.container.style.color = "white"
+        this.container.className = "start-screen"
 
         const title = document.createElement("h1")
         title.innerText = "It Gets Boring !!!"
-        title.style.fontSize = "60px"
+        title.className = "game-title"
 
         const subtitle = document.createElement("h2")
         subtitle.innerText = "Press any key to choose your shoot button"
 
         this.keyDisplay = document.createElement("h3")
+        this.keyDisplay.className = "key-display"
 
         this.confirmBtn = document.createElement("button")
         this.confirmBtn.innerText = "Confirm"
-        this.confirmBtn.style.margin = "10px"
+        this.confirmBtn.className = "menu-button"
 
         this.retryBtn = document.createElement("button")
         this.retryBtn.innerText = "Choose Again"
+        this.retryBtn.className = "menu-button"
 
         this.confirmBtn.style.display = "none"
         this.retryBtn.style.display = "none"
 
+        this.buttonContainer = document.createElement("div")
+        this.buttonContainer.className = "button-container"
+
+        this.buttonContainer.appendChild(this.confirmBtn)
+        this.buttonContainer.appendChild(this.retryBtn)
+
         this.container.appendChild(title)
         this.container.appendChild(subtitle)
         this.container.appendChild(this.keyDisplay)
-        this.container.appendChild(this.confirmBtn)
-        this.container.appendChild(this.retryBtn)
+        this.container.appendChild(this.buttonContainer)
 
         document.body.appendChild(this.container)
 
@@ -96,9 +92,10 @@ export default class StartScreen {
         window.removeEventListener("keydown", this.handleKeyPress)
 
         this.container.innerHTML = ""
+        this.container.classList.add("countdown-screen")
 
         const counter = document.createElement("h1")
-        counter.style.fontSize = "80px"
+        counter.className = "countdown"
 
         const subtitle = document.createElement("h3")
         subtitle.innerText = "Gain as many points as you can"
@@ -128,7 +125,6 @@ export default class StartScreen {
 
                 document.body.removeChild(this.container)
 
-                // start the actual game
                 this.startGameCallback(this.selectedKey)
 
             }
