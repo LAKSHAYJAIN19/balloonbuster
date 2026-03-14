@@ -18,7 +18,7 @@ export default class StartScreen {
         this.container.className = "start-screen"
 
         const title = document.createElement("h1")
-        title.innerText = "It Gets Boring !!!"
+        title.innerText = "It gets boring sometimes !!!"
         title.className = "game-title"
 
         const subtitle = document.createElement("h2")

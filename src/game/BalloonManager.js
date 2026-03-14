@@ -1,5 +1,7 @@
 import { increaseScore } from "./ScoreManager"
 import { getScore } from "./ScoreManager"
+import basketBackImage from "../assets/basket_backk.png"
+import basketFrontImage from "../assets/basket_frontt.png"
 const canvas = document.getElementById("gameCanvas")
 const ctx = canvas.getContext("2d")
 const balloonTypes = [
@@ -13,7 +15,7 @@ canvas.width = window.innerWidth
 canvas.height = window.innerHeight
 
 let balloons = []
-
+let particles = []
 let missed = 0
 let maxMiss = 15
 
@@ -24,6 +26,60 @@ let gameRunning = true
 
 const missCounter = document.getElementById("missLeft")
 missCounter.innerText = maxMiss
+
+/* ---------------- BASKET SYSTEM ---------------- */
+
+const basketBack = new Image()
+basketBack.src = basketBackImage
+
+const basketFront = new Image()
+basketFront.src = basketFrontImage
+
+let basket = {
+    width: 400,
+    height: 180,
+    x: canvas.width / 2 - 150,
+    y: canvas.height - 180
+}
+
+let basketSlots = []
+
+function drawBasket(){
+
+    if(basketBack.complete){
+        ctx.drawImage(basketBack, basket.x, basket.y, basket.width, basket.height)
+    }
+    const balloonsPerRow = 5
+    for(let i=0;i<basketSlots.length;i++){
+
+        const row = Math.floor(i / balloonsPerRow)
+        const col = i % balloonsPerRow
+
+        const spacingX = basket.width / (balloonsPerRow + 1.4)
+        const rowOffset = (row % 2) * (spacingX / 2.2)
+        const x = basket.x + spacingX * (col + 1) + rowOffset
+        const y = basket.y + basket.height - 100 - row * 20
+
+        ctx.beginPath()
+
+        ctx.arc(
+            x + basketSlots[i].offsetX,
+            y + basketSlots[i].offsetY,
+            24,
+            0,
+            Math.PI*2
+        )
+
+        ctx.fillStyle = basketSlots[i].color
+        ctx.fill()
+
+    }
+    if(basketFront.complete){
+        ctx.drawImage(basketFront, basket.x, basket.y, basket.width, basket.height)
+    }
+
+}
+
 
 function spawnBalloon(){
 
@@ -48,11 +104,26 @@ function spawnBalloon(){
     }, spawnRate)
 
 }
+function createBurst(x, y, color){
 
+    for(let i = 0; i < 15; i++){
+
+        particles.push({
+            x: x,
+            y: y,
+            size: Math.random() * 4 + 2,
+            speedX: (Math.random() - 0.5) * 6,
+            speedY: (Math.random() - 0.5) * 6,
+            life: 30,
+            color: color
+        })
+
+    }
+
+}
 function drawBalloons(){
 
     ctx.clearRect(0,0,canvas.width,canvas.height)
-
     for(let i = balloons.length-1; i >= 0; i--){
 
         const balloon = balloons[i]
@@ -64,17 +135,28 @@ function drawBalloons(){
 
         ctx.fillStyle = "black"
         const pointText = balloon.points === 1 ? "point" : "points"
+
         ctx.font = "bold 14px Arial"
         ctx.fillText("+" + balloon.points +" "+pointText, balloon.x, balloon.y -5)
+
         ctx.font = "12px Arial"
         ctx.textAlign = "center"
         ctx.textBaseline = "middle"
+
         const hitText = balloon.hitsLeft === 1 ? "hit" : "hits"
         ctx.fillText(balloon.hitsLeft+" "+hitText, balloon.x, balloon.y+12)
+
         balloon.y += balloon.speed
 
-        if(balloon.y > canvas.height){
+        if(balloon.y+balloon.size > basket.y+ basket.height*0.6){
 
+            if(basketSlots.length < maxMiss){
+                basketSlots.push({
+                    color: balloon.color,
+                    offsetX: Math.random()*8 - 4,
+                    offsetY: Math.random()*6 - 3
+                })
+            }
             balloons.splice(i,1)
 
             missed++
@@ -97,10 +179,32 @@ function drawBalloons(){
         }
 
     }
-
+    drawBasket()
     if(gameRunning){
-
+        drawParticles()
         requestAnimationFrame(drawBalloons)
+
+    }
+
+}
+function drawParticles(){
+
+    for(let i = particles.length - 1; i >= 0; i--){
+
+        const p = particles[i]
+
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+        ctx.fillStyle = p.color
+        ctx.fill()
+        p.speedY += 0.1
+        p.x += p.speedX
+        p.y += p.speedY
+        p.life--
+
+        if(p.life <= 0){
+            particles.splice(i,1)
+        }
 
     }
 
@@ -161,8 +265,8 @@ window.addEventListener("keydown",(event)=>{
 
             if(balloon.hitsLeft <= 0){
 
+                createBurst(balloon.x, balloon.y, balloon.color)
                 balloons.splice(i,1)
-
                 increaseScore(balloon.points)
 
             }
