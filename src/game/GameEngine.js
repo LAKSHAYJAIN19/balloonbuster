@@ -1,4 +1,4 @@
-import { spawnBalloon } from './BalloonManager'
+// import { spawnBalloon } from './BalloonManager'
 import { increaseDifficulty } from './DifficultyManager'
 
 let gameInterval

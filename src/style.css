@@ -103,3 +103,10 @@ canvas {
   background-color: #C6AAFF;
   color: white;
 }
+#scoreMessage{
+  margin-top: 15px;
+  font-size: 20px;
+  font-weight: bold;
+  color: gold;
+  text-align: center;
+}

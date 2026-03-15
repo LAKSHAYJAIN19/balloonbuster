@@ -1,5 +1,10 @@
+import { showBonusText } from "./BalloonManager"
 let score = 0
 let highScore = 0
+
+let streakScore = 0
+let nextBonusThreshold = 20
+let currentBonus = 6
 
 export function initScore(){
 
@@ -15,7 +20,8 @@ export function initScore(){
 export function increaseScore(points){
 
     score+= points
-
+    streakScore += points
+    checkBonus()
     document.getElementById("score").innerText = score
 
     if(score > highScore){
@@ -28,7 +34,29 @@ export function increaseScore(points){
     }
 
 }
+function checkBonus(){
 
+    if(streakScore >= nextBonusThreshold){
+
+        score += currentBonus
+
+        // show updated score
+        document.getElementById("score").innerText = score
+
+        showBonusText(currentBonus)
+        nextBonusThreshold += 10
+        currentBonus += 1
+
+    }
+
+}
+export function resetBonus(){
+
+    streakScore = 0
+    nextBonusThreshold = 20
+    currentBonus = 6
+
+}
 export function resetScore(){
 
     score = 0

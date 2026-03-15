@@ -1,5 +1,7 @@
 import { increaseScore } from "./ScoreManager"
 import { getScore } from "./ScoreManager"
+import { resetBonus } from "./ScoreManager"
+import { getScoreMessage } from "./ScoreMessageManager"
 import basketBackImage from "../assets/basket_backk.png"
 import basketFrontImage from "../assets/basket_frontt.png"
 const canvas = document.getElementById("gameCanvas")
@@ -16,6 +18,7 @@ canvas.height = window.innerHeight
 
 let balloons = []
 let particles = []
+let floatingTexts = []
 let missed = 0
 let maxMiss = 15
 
@@ -121,6 +124,17 @@ function createBurst(x, y, color){
     }
 
 }
+function createFloatingBonus(text, x, y){
+
+    floatingTexts.push({
+        text: text,
+        x: x,
+        y: y,
+        life: 60,
+        alpha: 1
+    })
+
+}
 function drawBalloons(){
 
     ctx.clearRect(0,0,canvas.width,canvas.height)
@@ -157,6 +171,7 @@ function drawBalloons(){
                     offsetY: Math.random()*6 - 3
                 })
             }
+            resetBonus()
             balloons.splice(i,1)
 
             missed++
@@ -180,9 +195,36 @@ function drawBalloons(){
 
     }
     drawBasket()
+    drawFloatingTexts()
     if(gameRunning){
         drawParticles()
         requestAnimationFrame(drawBalloons)
+
+    }
+
+}
+function drawFloatingTexts(){
+
+    for(let i = floatingTexts.length - 1; i >= 0; i--){
+
+        const t = floatingTexts[i]
+
+        ctx.globalAlpha = t.alpha
+        ctx.fillStyle = `hsl(${Math.random()*60 + 40}, 100%, 60%)`
+        ctx.font = "bold 22px Arial"
+        ctx.textAlign = "center"
+
+        ctx.fillText(t.text, t.x, t.y)
+
+        ctx.globalAlpha = 1
+
+        t.y -= 0.7
+        t.life--
+        t.alpha -= 0.015
+
+        if(t.life <= 0){
+            floatingTexts.splice(i,1)
+        }
 
     }
 
@@ -218,8 +260,11 @@ function gameOver(){
 
     const screen = document.getElementById("gameOverScreen")
     const finalScore = document.getElementById("finalScore")
+    const messageBox = document.getElementById("scoreMessage")
 
-    finalScore.innerText = getScore()
+    const score = getScore()
+    finalScore.innerText = score
+    messageBox.innerText = getScoreMessage(score)
 
     screen.style.display = "flex"
 
@@ -318,3 +363,8 @@ document.getElementById("playAgainBtn").addEventListener("click", () => {
     location.reload()
 
 })
+export function showBonusText(bonus){
+
+    createFloatingBonus("BONUS +" + bonus, canvas.width/2, canvas.height/2)
+
+}
