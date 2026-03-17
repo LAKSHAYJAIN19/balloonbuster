@@ -4,6 +4,7 @@ import { resetBonus } from "./ScoreManager"
 import { getScoreMessage } from "./ScoreMessageManager"
 import basketBackImage from "../assets/basket_backk.png"
 import basketFrontImage from "../assets/basket_frontt.png"
+import { saveScore, renderLeaderboard } from "./LeaderboardManager"
 const canvas = document.getElementById("gameCanvas")
 const ctx = canvas.getContext("2d")
 const balloonTypes = [
@@ -40,9 +41,9 @@ basketFront.src = basketFrontImage
 
 let basket = {
     width: 400,
-    height: 180,
+    height: 130,
     x: canvas.width / 2 - 150,
-    y: canvas.height - 180
+    y: canvas.height - 130
 }
 
 let basketSlots = []
@@ -254,6 +255,7 @@ function drawParticles(){
 
 function gameOver(){
 
+    console.log("GAME OVER TRIGGERED")
     gameRunning = false
 
     clearInterval(spawnInterval)
@@ -265,8 +267,62 @@ function gameOver(){
     const score = getScore()
     finalScore.innerText = score
     messageBox.innerText = getScoreMessage(score)
+    renderLeaderboard()
 
     screen.style.display = "flex"
+
+    const nameInput = document.getElementById("playerName")
+    const errorText = document.getElementById("nameError")
+    const saveBtn = document.getElementById("saveScoreBtn")
+
+    saveBtn.disabled = false // reset button state
+
+    saveBtn.onclick = () => {
+
+        const name = nameInput.value.trim()
+
+        if(!name){
+            errorText.innerText = "Please enter your name"
+            return
+        }
+
+        errorText.innerText = ""
+
+        const rank = saveScore(name, score)
+
+        renderLeaderboard(rank)
+
+        nameInput.value = ""
+        saveBtn.disabled = true
+    }
+
+    nameInput.oninput = () => {
+        errorText.innerText = ""
+    }
+
+    document.getElementById("copyScoreBtn").onclick = async () => {
+        const btn = document.getElementById("copyScoreBtn")
+        try {
+            await navigator.clipboard.writeText(getShareText(score))
+            btn.innerText = "✅ Copied!"
+            btn.disabled = true
+            setTimeout(() => {
+                btn.innerText = "📋 Copy Score"
+                btn.disabled = false
+            }, 1500)
+        } catch {
+            btn.innerText = "❌ Failed"
+
+            setTimeout(() => {
+                btn.innerText = "📋 Copy Score"
+            }, 1500)
+        }
+    }
+
+    document.getElementById("whatsappShareBtn").onclick = () => {
+        const text = encodeURIComponent(getShareText(score))
+        window.open(`https://wa.me/?text=${text}`, "_blank")
+    }
 
 }
 
@@ -368,3 +424,7 @@ export function showBonusText(bonus){
     createFloatingBonus("BONUS +" + bonus, canvas.width/2, canvas.height/2)
 
 }
+function getShareText(score) {
+    return `🎯 I scored ${score} in Balloon Shooter!\nCan you beat me? 😎 \nPlay now: https://balloonbuster-nine.vercel.app/`
+}
+

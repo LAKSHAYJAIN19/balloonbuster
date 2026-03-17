@@ -21,6 +21,21 @@
     <h1>Game Over</h1>
     <p>Final Score: <span id="finalScore">0</span></p>
     <p id="scoreMessage"></p>
+
+    <div id="nameInputSection">
+      <input type="text" id="playerName" placeholder="Enter your name" maxlength="10" />
+      <button id="saveScoreBtn">Submit Score</button>
+      <p id="nameError"></p>
+    </div>
+
+    <h2>Top Players</h2>
+    <ul id="leaderboardList"></ul>
+
+    <div id="shareSection">
+      <button id="copyScoreBtn">📋 Copy Score</button>
+      <button id="whatsappShareBtn">📤 Share on WhatsApp</button>
+    </div>
+
     <button id="playAgainBtn">Play Again</button>
   </div>
   <script type="module" src="/src/main.js"></script>
