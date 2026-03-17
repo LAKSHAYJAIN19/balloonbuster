@@ -253,7 +253,7 @@ function drawParticles(){
 
 }
 
-function gameOver(){
+async function gameOver(){
 
     console.log("GAME OVER TRIGGERED")
     gameRunning = false
@@ -267,7 +267,7 @@ function gameOver(){
     const score = getScore()
     finalScore.innerText = score
     messageBox.innerText = getScoreMessage(score)
-    renderLeaderboard()
+    await renderLeaderboard()
 
     screen.style.display = "flex"
 
@@ -277,7 +277,7 @@ function gameOver(){
 
     saveBtn.disabled = false // reset button state
 
-    saveBtn.onclick = () => {
+    saveBtn.onclick = async () => {
 
         const name = nameInput.value.trim()
 
@@ -288,9 +288,9 @@ function gameOver(){
 
         errorText.innerText = ""
 
-        const rank = saveScore(name, score)
+        const savedScore = await saveScore(name, score)
 
-        renderLeaderboard(rank)
+        await renderLeaderboard(savedScore)
 
         nameInput.value = ""
         saveBtn.disabled = true

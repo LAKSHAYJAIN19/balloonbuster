@@ -1,52 +1,58 @@
+import { db } from "../firebase.js"
+import { collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore"
+
+const COLLECTION_NAME = "leaderboard"
 const MAX_ENTRIES = 10
 
-export function getLeaderboard(){
-
+// 🔥 GET LEADERBOARD FROM FIREBASE
+export async function getLeaderboard() {
     try {
-        const data = localStorage.getItem("leaderboard")
-        const parsed = data ? JSON.parse(data) : []
-
-        // 🛡️ Filter out corrupted entries
-        return parsed.filter(entry =>
-            entry &&
-            typeof entry.name === "string" &&
-            typeof entry.score === "number"
+        const q = query(
+            collection(db, COLLECTION_NAME),
+            orderBy("score", "desc"),
+            limit(MAX_ENTRIES)
         )
 
+        const snapshot = await getDocs(q)
+
+        return snapshot.docs.map(doc => {
+            const data = doc.data()
+
+            return {
+                name: typeof data.name === "string" ? data.name : "Player",
+                score: typeof data.score === "number" ? data.score : 0
+            }
+        })
+
     } catch (e) {
-        console.error("Leaderboard parse error:", e)
+        console.error("🔥 Firestore fetch error:", e)
         return []
     }
-
 }
 
-export function saveScore(name,score){
+// 🔥 SAVE SCORE TO FIREBASE
+export async function saveScore(name, score) {
+    try {
+        const newEntry = {
+            name: name && name.trim() !== "" ? name : "Player",
+            score: Number(score),
+            createdAt: new Date()
+        }
 
-    let leaderboard = getLeaderboard()
+        await addDoc(collection(db, COLLECTION_NAME), newEntry)
 
-    const newEntry = {
-        name: name && name.trim() !== "" ? name : "Player",
-        score: Number(score), // 🛡️ force number
-        date: new Date().toLocaleDateString()
+        return newEntry.score // used for highlight
+
+    } catch (e) {
+        console.error("🔥 Firestore save error:", e)
+        return null
     }
-
-    leaderboard.push(newEntry)
-
-    leaderboard.sort((a, b) => b.score - a.score)
-
-    leaderboard = leaderboard.slice(0, MAX_ENTRIES)
-
-    localStorage.setItem("leaderboard", JSON.stringify(leaderboard))
-
-    return leaderboard.findIndex(entry =>
-        entry.name === newEntry.name &&
-        entry.score === newEntry.score &&
-        entry.date === newEntry.date
-    )
 }
 
-export function renderLeaderboard(currentRank = -1){
-    const leaderboard = getLeaderboard()
+// 🔥 RENDER LEADERBOARD
+export async function renderLeaderboard(currentScore = null) {
+
+    const leaderboard = await getLeaderboard()
     const list = document.getElementById("leaderboardList")
 
     list.innerHTML = ""
@@ -62,12 +68,13 @@ export function renderLeaderboard(currentRank = -1){
 
         const li = document.createElement("li")
 
-        const name = entry.name || "Player"
-        const score = typeof entry.score === "number" ? entry.score : 0
+        const name = entry.name
+        const score = entry.score
 
         li.innerText = `${index + 1}. ${name} - ${score}`
 
-        if (currentRank !== -1 && index === currentRank) {
+        // 🎯 Highlight current player
+        if (currentScore !== null && score === currentScore) {
             li.style.color = "gold"
             li.style.fontWeight = "bold"
         }
