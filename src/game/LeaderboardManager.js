@@ -51,7 +51,7 @@ export async function saveScore(name, score) {
 }
 
 // 🔥 RENDER LEADERBOARD
-export async function renderLeaderboard(currentScore = null) {
+export async function renderLeaderboard() {
 
     const leaderboard = await getLeaderboard()
     const list = document.getElementById("leaderboardList")
@@ -69,16 +69,19 @@ export async function renderLeaderboard(currentScore = null) {
 
         const li = document.createElement("li")
 
-        const name = entry.name
-        const score = entry.score
+        let prefix
 
-        li.innerText = `${index + 1}. ${name} - ${score}`
+        if (index === 0) prefix = "🥇"
+        else if (index === 1) prefix = "🥈"
+        else if (index === 2) prefix = "🥉"
+        else prefix = `${index + 1}.`
 
-        // 🎯 Highlight current player
-        if (currentScore !== null && score === currentScore) {
-            li.style.color = "gold"
-            li.style.fontWeight = "bold"
-        }
+        li.innerHTML = `<span>${prefix} ${entry.name}</span><span>${entry.score}</span>`
+
+        // 🎨 Styling for top 3
+        if (index === 0) li.style.color = "gold"
+        if (index === 1) li.style.color = "silver"
+        if (index === 2) li.style.color = "#cd7f32"
 
         list.appendChild(li)
     })

@@ -109,23 +109,7 @@ canvas {
   color: gold;
   text-align: center;
 }
-#leaderboardList {
-  list-style: none;
-  padding: 0;
-  max-height: 160px;
-  overflow-y: auto;
 
-  width: 300px;
-  text-align: left;
-}
-#leaderboardList::-webkit-scrollbar {
-  width: 6px;
-}
-
-#leaderboardList::-webkit-scrollbar-thumb {
-  background: gold;
-  border-radius: 10px;
-}
 #nameError{
   color: red;
   font-size: 14px;
@@ -170,4 +154,96 @@ canvas {
 
 #shareSection button:hover {
   background-color: #16a34a;
+}
+
+
+/* 🧊 Glass Leaderboard Container */
+#leaderboardContainer {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border-radius: 16px;
+  padding: 20px 25px;
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  box-shadow:
+          0 8px 32px rgba(0, 0, 0, 0.3),
+          inset 0 0 8px rgba(255, 255, 255, 0.05);
+
+  width: 280px;
+}
+
+/* 🏆 Leaderboard Title */
+#leaderboardTitle {
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 12px;
+  text-align: center;
+  letter-spacing: 1px;
+}
+#leaderboardContainer {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border-radius: 16px;
+  padding: 20px 25px;
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  box-shadow:
+          0 8px 32px rgba(0, 0, 0, 0.3),
+          inset 0 0 8px rgba(255, 255, 255, 0.05);
+
+  width: 280px;
+
+  /* 🔥 KEY PART */
+  max-height: 260px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+/* 📋 List styling */
+#leaderboardList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#leaderboardList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ✨ Hover effect */
+#leaderboardList li:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* 🥇🥈🥉 Glow effect */
+#leaderboardList li:nth-child(1) {
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+}
+#leaderboardList li:nth-child(2) {
+  box-shadow: 0 0 10px rgba(192, 192, 192, 0.6);
+}
+#leaderboardList li:nth-child(3) {
+  box-shadow: 0 0 10px rgba(205, 127, 50, 0.6);
+}
+
+#leaderboardContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+#leaderboardContainer::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.3);
+  border-radius: 10px;
 }
