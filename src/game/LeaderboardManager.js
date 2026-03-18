@@ -1,5 +1,6 @@
 import { db } from "../firebase.js"
 import { collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore"
+import { serverTimestamp } from "firebase/firestore"
 
 const COLLECTION_NAME = "leaderboard"
 const MAX_ENTRIES = 10
@@ -36,7 +37,7 @@ export async function saveScore(name, score) {
         const newEntry = {
             name: name && name.trim() !== "" ? name : "Player",
             score: Number(score),
-            createdAt: new Date()
+            createdAt: serverTimestamp()
         }
 
         await addDoc(collection(db, COLLECTION_NAME), newEntry)

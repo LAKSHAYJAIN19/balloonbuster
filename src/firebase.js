@@ -2,12 +2,12 @@ import { initializeApp } from "firebase/app"
 import { getFirestore } from "firebase/firestore"
 
 const firebaseConfig = {
-    apiKey: "AIzaSyB5d3tjfPn0kAfJcoDqTecWj8wtcdW5KGQ",
-    authDomain: "balloon-shooter-4be63.firebaseapp.com",
-    projectId: "balloon-shooter-4be63",
-    storageBucket: "balloon-shooter-4be63.firebasestorage.app",
-    messagingSenderId: "902412365840",
-    appId: "1:902412365840:web:2ad1f19be9bee9c0a41a95"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_APP_ID
 }
 
 const app = initializeApp(firebaseConfig)
