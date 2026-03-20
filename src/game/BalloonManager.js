@@ -1,5 +1,6 @@
 import { increaseScore } from "./ScoreManager"
 import { getScore } from "./ScoreManager"
+import {resetScore} from "./ScoreManager";
 import { resetBonus } from "./ScoreManager"
 import { getScoreMessage } from "./ScoreMessageManager"
 import basketBackImage from "../assets/basket_backk.png"
@@ -27,7 +28,8 @@ let speedMultiplier = 1
 let spawnRate = 1000
 let spawnInterval
 let gameRunning = true
-
+let gameStartTime = 0
+let difficultyInterval
 const missCounter = document.getElementById("missLeft")
 missCounter.innerText = maxMiss
 
@@ -86,6 +88,8 @@ function drawBasket(){
 
 
 function spawnBalloon(){
+
+    clearInterval(spawnInterval) // ✅ prevent stacking
 
     spawnInterval = setInterval(()=>{
 
@@ -259,12 +263,14 @@ async function gameOver(){
     gameRunning = false
 
     clearInterval(spawnInterval)
+    clearInterval(difficultyInterval)
 
     const screen = document.getElementById("gameOverScreen")
     const finalScore = document.getElementById("finalScore")
     const messageBox = document.getElementById("scoreMessage")
 
     const score = getScore()
+    const duration = (Date.now() - gameStartTime) / 1000 // ⏱️ in seconds
     finalScore.innerText = score
     messageBox.innerText = getScoreMessage(score)
     await renderLeaderboard()
@@ -288,8 +294,7 @@ async function gameOver(){
 
         errorText.innerText = ""
 
-        const savedScore = await saveScore(name, score)
-
+        const savedScore = await saveScore(name, score, duration)
         await renderLeaderboard(savedScore)
 
         nameInput.value = ""
@@ -390,33 +395,28 @@ window.addEventListener("keyup",(event)=>{
 
 function increaseDifficulty(){
 
-    setInterval(()=>{
+    clearInterval(difficultyInterval)
+
+    difficultyInterval = setInterval(()=>{
 
         speedMultiplier += 0.3
 
         if(spawnRate > 300){
-
             spawnRate -= 100
-
         }
 
     },15000)
 
 }
 
-export function startBalloonGame(){
-
-    spawnBalloon()
-
-    increaseDifficulty()
-
-    drawBalloons()
-
-}
 
 document.getElementById("playAgainBtn").addEventListener("click", () => {
 
-    location.reload()
+    document.getElementById("gameOverScreen").style.display = "none"
+
+    resetGameState()
+
+    startBalloonGame()
 
 })
 export function showBonusText(bonus){
@@ -425,6 +425,48 @@ export function showBonusText(bonus){
 
 }
 function getShareText(score) {
-    return `🎯 I scored ${score} in Balloon Shooter!\nCan you beat me? 😎 \nPlay now: https://balloonbuster-nine.vercel.app/`
+    return `I scored ${score} in Balloon Shooter!\nCan you beat me? \nPlay now: https://balloonbuster-nine.vercel.app/`
 }
 
+function resetGameState(){
+
+    clearInterval(spawnInterval)
+    clearInterval(difficultyInterval)
+
+
+    resetScore()
+
+    balloons = []
+    particles = []
+    floatingTexts = []
+    basketSlots = []
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+
+    missed = 0
+    speedMultiplier = 1
+    spawnRate = 1000
+
+
+    gameRunning = true
+
+    gameStartTime = Date.now()
+
+
+    missCounter.innerText = maxMiss
+
+    resetBonus()
+    document.getElementById("playerName").value = ""
+    document.getElementById("saveScoreBtn").disabled = false
+
+    console.log("✅ FULL GAME RESET DONE")
+}
+export function startBalloonGame(){
+
+    gameStartTime = Date.now()
+    spawnBalloon()
+    increaseDifficulty()
+    drawBalloons()
+
+}
