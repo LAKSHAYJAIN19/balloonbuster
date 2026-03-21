@@ -3,9 +3,11 @@ import { getScore } from "./ScoreManager"
 import {resetScore} from "./ScoreManager";
 import { resetBonus } from "./ScoreManager"
 import { getScoreMessage } from "./ScoreMessageManager"
+import StartScreen from "./StartScreen"
+import { initScore } from "./ScoreManager"
 import basketBackImage from "../assets/basket_backk.png"
 import basketFrontImage from "../assets/basket_frontt.png"
-import { saveScore, renderLeaderboard } from "./LeaderboardManager"
+import {saveScore, renderLeaderboard, getPlayerRankMessage} from "./LeaderboardManager"
 const canvas = document.getElementById("gameCanvas")
 const ctx = canvas.getContext("2d")
 const balloonTypes = [
@@ -259,6 +261,7 @@ function drawParticles(){
 
 async function gameOver(){
 
+    resetRankMessage()
     console.log("GAME OVER TRIGGERED")
     gameRunning = false
 
@@ -294,8 +297,16 @@ async function gameOver(){
 
         errorText.innerText = ""
 
-        const savedScore = await saveScore(name, score, duration)
-        await renderLeaderboard(savedScore)
+        // const savedScore = await saveScore(name, score, duration)
+        // await renderLeaderboard(savedScore)
+        const result = await saveScore(name, score, duration)
+
+        if (result) {
+            await renderLeaderboard()
+
+            const message = await getPlayerRankMessage(result.id)
+            displayRankMessage(message)
+        }
 
         nameInput.value = ""
         saveBtn.disabled = true
@@ -412,11 +423,28 @@ function increaseDifficulty(){
 
 document.getElementById("playAgainBtn").addEventListener("click", () => {
 
+    // document.getElementById("gameOverScreen").style.display = "none"
+    //
+    // resetGameState()
+    //
+    // startBalloonGame()
+
     document.getElementById("gameOverScreen").style.display = "none"
 
     resetGameState()
 
-    startBalloonGame()
+    // ❗ clear previous key
+    window.shootKey = null
+
+    // ❗ recreate start screen so user selects key again
+    new StartScreen((selectedKey) => {
+
+        window.shootKey = selectedKey
+        initScore()
+        startBalloonGame()
+
+    })
+
 
 })
 export function showBonusText(bonus){
@@ -461,6 +489,18 @@ function resetGameState(){
     document.getElementById("saveScoreBtn").disabled = false
 
     console.log("✅ FULL GAME RESET DONE")
+}
+
+function displayRankMessage(message) {
+    const el = document.getElementById("rankMessage")
+
+    if (!el) return
+
+    el.innerText = message
+}
+function resetRankMessage() {
+    const el = document.getElementById("rankMessage")
+    if (el) el.innerText = "Submit your score to see your rank 👇"
 }
 export function startBalloonGame(){
 
