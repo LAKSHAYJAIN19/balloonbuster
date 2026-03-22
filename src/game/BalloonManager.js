@@ -297,8 +297,6 @@ async function gameOver(){
 
         errorText.innerText = ""
 
-        // const savedScore = await saveScore(name, score, duration)
-        // await renderLeaderboard(savedScore)
         const result = await saveScore(name, score, duration)
 
         if (result) {
@@ -423,20 +421,12 @@ function increaseDifficulty(){
 
 document.getElementById("playAgainBtn").addEventListener("click", () => {
 
-    // document.getElementById("gameOverScreen").style.display = "none"
-    //
-    // resetGameState()
-    //
-    // startBalloonGame()
-
     document.getElementById("gameOverScreen").style.display = "none"
 
     resetGameState()
 
-    // ❗ clear previous key
     window.shootKey = null
 
-    // ❗ recreate start screen so user selects key again
     new StartScreen((selectedKey) => {
 
         window.shootKey = selectedKey
