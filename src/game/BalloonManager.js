@@ -423,6 +423,18 @@ document.getElementById("playAgainBtn").addEventListener("click", () => {
 
     document.getElementById("gameOverScreen").style.display = "none"
 
+    // ✅ Restore description
+    const description = document.getElementById("gameDescription")
+    if (description) {
+        description.style.display = ""
+    }
+
+    // ✅ Restore footer
+    const footer = document.getElementById("footer")
+    if (footer) {
+        footer.style.display = ""
+    }
+
     resetGameState()
 
     window.shootKey = null

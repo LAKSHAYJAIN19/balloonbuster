@@ -2,6 +2,10 @@ export default class StartScreen {
 
     constructor(startGameCallback){
 
+        const existing = document.querySelector(".start-screen")
+        if (existing) {
+            existing.remove()
+        }
         this.startGameCallback = startGameCallback
         this.selectedKey = null
         this.isCountingDown = false
@@ -122,6 +126,16 @@ export default class StartScreen {
             else{
 
                 clearInterval(interval)
+
+                const description = document.getElementById("gameDescription")
+                if (description) {
+                    description.style.display = "none"
+                }
+
+                const footer = document.getElementById("footer")
+                if (footer) {
+                    footer.style.display = "none"
+                }
 
                 document.body.removeChild(this.container)
 
