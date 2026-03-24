@@ -3,6 +3,7 @@ import { getScore } from "./ScoreManager"
 import {resetScore} from "./ScoreManager";
 import { resetBonus } from "./ScoreManager"
 import { getScoreMessage } from "./ScoreMessageManager"
+import { audioManager } from "./AudioManager"
 import StartScreen from "./StartScreen"
 import { initScore } from "./ScoreManager"
 import basketBackImage from "../assets/basket_backk.png"
@@ -81,6 +82,7 @@ function drawBasket(){
         ctx.fillStyle = basketSlots[i].color
         ctx.fill()
 
+
     }
     if(basketFront.complete){
         ctx.drawImage(basketFront, basket.x, basket.y, basket.width, basket.height)
@@ -116,6 +118,7 @@ function spawnBalloon(){
 }
 function createBurst(x, y, color){
 
+    audioManager.playPop()
     for(let i = 0; i < 15; i++){
 
         particles.push({
@@ -172,6 +175,7 @@ function drawBalloons(){
         if(balloon.y+balloon.size > basket.y+ basket.height*0.6){
 
             if(basketSlots.length < maxMiss){
+                audioManager.playDrop()
                 basketSlots.push({
                     color: balloon.color,
                     offsetX: Math.random()*8 - 4,
@@ -180,7 +184,6 @@ function drawBalloons(){
             }
             resetBonus()
             balloons.splice(i,1)
-
             missed++
 
             let remaining = maxMiss - missed
@@ -261,6 +264,7 @@ function drawParticles(){
 
 async function gameOver(){
 
+    audioManager.stopBgMusic()
     resetRankMessage()
     console.log("GAME OVER TRIGGERED")
     gameRunning = false
@@ -506,6 +510,7 @@ function resetRankMessage() {
 }
 export function startBalloonGame(){
 
+    audioManager.playBgMusic()
     gameStartTime = Date.now()
     spawnBalloon()
     increaseDifficulty()
